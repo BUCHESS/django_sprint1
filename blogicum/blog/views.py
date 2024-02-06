@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import Http404
 
 
 posts = [
@@ -44,21 +45,19 @@ posts = [
     },
 ]
 
+posts_id = [i['id'] for i in posts]
 
-# Create your views here.
+
 def index(request):
-    template = 'blog/index.html'
-    context = {'post': posts}
-    return render(request, template, context)
+    return render(request, 'blog/index.html', {'post': posts})
 
 
 def post_detail(request, pk):
-    template = 'blog/detail.html'
-    context = {'post': posts[pk]}
-    return render(request, template, context)
+    if pk not in posts_id:
+        raise Http404('The requested resource was not found on this server.')
+    return render(request, 'blog/detail.html', {'post': posts[pk]})
 
 
 def category_posts(request, category_slug):
-    template = 'blog/category.html'
-    context = {'category_slug': category_slug}
-    return render(request, template, context)
+    return render(request, 'blog/category.html',
+                  {'category_slug': category_slug})
